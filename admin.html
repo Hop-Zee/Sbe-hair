@@ -235,7 +235,7 @@
     onAuthStateChanged(auth, (user) => {
       if (!user) {
         // Not authenticated, redirect to login
-        window.location.href = '/login.html';
+        window.location.href = 'login.html';
       } else {
         // Show admin email
         document.getElementById('adminEmailDisplay').textContent = user.email;
@@ -253,7 +253,7 @@
         await signOut(auth);
         sessionStorage.removeItem('adminLoggedIn');
         sessionStorage.removeItem('adminEmail');
-        window.location.href = '/login.html';
+        window.location.href = 'login.html';
       }
     };
 
