@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SBE Hair Salon - Admin Login</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <style>
+    body {
+      font-family: "Segoe UI", sans-serif;
+    }
+    .login-bg {
+      background: linear-gradient(135deg, #1f2937 0%, #111827 100%);
+    }
+    input:disabled {
+      cursor: not-allowed;
+      opacity: 0.6;
+    }
+  </style>
+</head>
+
+<body class="login-bg min-h-screen flex items-center justify-center px-4">
+
+  <div class="w-full max-w-md">
+    
+    <!-- Back to Home Link -->
+    <div class="mb-6">
+      <a href="/" class="text-yellow-500 hover:text-yellow-400 flex items-center gap-2 transition text-sm">
+        <i class="fa-solid fa-arrow-left"></i>
+        Back to Booking
+      </a>
+    </div>
+
+    <!-- Logo Section -->
+    <div class="text-center mb-10">
+      <div class="inline-flex items-center justify-center w-16 h-16 bg-yellow-500 rounded-full mb-4">
+        <i class="fa-solid fa-scissors text-2xl text-black"></i>
+      </div>
+      <h1 class="text-3xl font-black text-white mb-2">SBE HAIR SALON</h1>
+      <p class="text-yellow-500 font-bold">Admin Dashboard</p>
+    </div>
+
+    <!-- Login Card -->
+    <div class="bg-zinc-900 rounded-2xl shadow-2xl p-8 border border-zinc-800">
+      
+      <h2 class="text-2xl font-black text-white mb-2 text-center">Welcome Back</h2>
+      <p class="text-zinc-400 text-center mb-8">Sign in to manage bookings</p>
+
+      <!-- Error Alert -->
+      <div id="errorAlert" class="hidden mb-6 bg-red-900 text-red-100 p-4 rounded-lg flex items-start gap-3">
+        <i class="fa-solid fa-triangle-exclamation flex-shrink-0 mt-0.5"></i>
+        <div id="errorMessage"></div>
+      </div>
+
+      <!-- Loading Alert -->
+      <div id="loadingAlert" class="hidden mb-6 bg-blue-900 text-blue-100 p-4 rounded-lg flex items-center gap-3">
+        <i class="fa-solid fa-spinner animate-spin"></i>
+        <div>Signing in...</div>
+      </div>
+
+      <!-- Login Form -->
+      <form id="loginForm" class="space-y-5">
+        
+        <!-- Email -->
+        <div>
+          <label class="block text-sm font-bold text-white mb-2">
+            <i class="fa-solid fa-envelope mr-2 text-yellow-500"></i>Email Address
+          </label>
+          <input 
+            type="email" 
+            id="email" 
+            required
+            placeholder="admin@example.com"
+            class="w-full bg-zinc-800 border border-zinc-700 text-white px-4 py-3 rounded-lg focus:border-yellow-500 focus:outline-none transition"
+            autocomplete="email"
+          >
+        </div>
+
+        <!-- Password -->
+        <div>
+          <label class="block text-sm font-bold text-white mb-2">
+            <i class="fa-solid fa-lock mr-2 text-yellow-500"></i>Password
+          </label>
+          <div class="relative">
+            <input 
+              type="password" 
+              id="password" 
+              required
+              placeholder="••••••••"
+              class="w-full bg-zinc-800 border border-zinc-700 text-white px-4 py-3 rounded-lg focus:border-yellow-500 focus:outline-none transition pr-12"
+              autocomplete="current-password"
+            >
+            <button
+              type="button"
+              onclick="togglePasswordVisibility()"
+              class="absolute right-3 top-1/2 transform -translate-y-1/2 text-zinc-400 hover:text-white transition"
+            >
+              <i id="toggleIcon" class="fa-solid fa-eye"></i>
+            </button>
+          </div>
+        </div>
+
+        <!-- Remember Me -->
+        <label class="flex items-center gap-2 text-sm text-zinc-400 hover:text-white transition cursor-pointer">
+          <input 
+            type="checkbox" 
+            id="rememberMe"
+            class="w-4 h-4 rounded accent-yellow-500"
+          >
+          <span>Keep me signed in</span>
+        </label>
+
+        <!-- Login Button -->
+        <button 
+          type="submit"
+          id="loginBtn"
+          class="w-full bg-yellow-500 hover:bg-yellow-600 text-black font-black py-3 rounded-lg transition flex items-center justify-center gap-2"
+        >
+          <i class="fa-solid fa-arrow-right-to-bracket"></i>
+          Sign In
+        </button>
+
+      </form>
+
+      <!-- Security Notice -->
+      <div class="mt-8 pt-6 border-t border-zinc-800">
+        <p class="text-xs text-zinc-500 text-center">
+          <i class="fa-solid fa-shield mr-1"></i>
+          Your login credentials are securely encrypted
+        </p>
+      </div>
+
+    </div>
+
+    <!-- Footer -->
+    <p class="text-center text-zinc-500 text-xs mt-8">
+      Protected by Firebase Authentication
+    </p>
+
+  </div>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+    import { getAuth, signInWithEmailAndPassword, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+
+    // ============================
+    // FIREBASE CONFIGURATION
+    // ============================
+
+    const firebaseConfig = {
+      apiKey: import.meta.env.VITE_FIREBASE_API_KEY || "YOUR_API_KEY",
+      authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN || "your-project.firebaseapp.com",
+      projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID || "your-project-id",
+      storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET || "your-bucket.appspot.com",
+      messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID || "your-sender-id",
+      appId: import.meta.env.VITE_FIREBASE_APP_ID || "your-app-id"
+    };
+
+    // Initialize Firebase
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+
+    // Disable console in production
+    if (import.meta.env.PROD) {
+      console.log = () => {};
+      console.error = () => {};
+      console.warn = () => {};
+    }
+
+    // ============================
+    // PASSWORD VISIBILITY TOGGLE
+    // ============================
+
+    window.togglePasswordVisibility = function() {
+      const passwordInput = document.getElementById('password');
+      const toggleIcon = document.getElementById('toggleIcon');
+      
+      if (passwordInput.type === 'password') {
+        passwordInput.type = 'text';
+        toggleIcon.classList.remove('fa-eye');
+        toggleIcon.classList.add('fa-eye-slash');
+      } else {
+        passwordInput.type = 'password';
+        toggleIcon.classList.remove('fa-eye-slash');
+        toggleIcon.classList.add('fa-eye');
+      }
+    };
+
+    // ============================
+    // LOGIN FORM HANDLER
+    // ============================
+
+    document.getElementById('loginForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      const email = document.getElementById('email').value.trim();
+      const password = document.getElementById('password').value;
+      const rememberMe = document.getElementById('rememberMe').checked;
+      const loginBtn = document.getElementById('loginBtn');
+      const errorAlert = document.getElementById('errorAlert');
+      const errorMessage = document.getElementById('errorMessage');
+      const loadingAlert = document.getElementById('loadingAlert');
+
+      // Clear previous errors
+      errorAlert.classList.add('hidden');
+
+      // Show loading state
+      loadingAlert.classList.remove('hidden');
+      loginBtn.disabled = true;
+
+      try {
+        // Attempt login with Firebase
+        const userCredential = await signInWithEmailAndPassword(auth, email, password);
+        
+        // Success - Store session
+        sessionStorage.setItem('adminLoggedIn', 'true');
+        sessionStorage.setItem('adminEmail', userCredential.user.email);
+        
+        // Optional: Remember me for longer persistence
+        if (rememberMe) {
+          localStorage.setItem('adminEmailSaved', userCredential.user.email);
+        }
+        
+        // Redirect to admin dashboard
+        setTimeout(() => {
+          window.location.href = '/admin.html';
+        }, 500);
+
+      } catch (error) {
+        // Hide loading & re-enable button
+        loadingAlert.classList.add('hidden');
+        loginBtn.disabled = false;
+
+        // Determine error message
+        let message = 'Login failed. Please try again.';
+        
+        if (error.code === 'auth/user-not-found') {
+          message = 'No account found with this email';
+        } else if (error.code === 'auth/wrong-password') {
+          message = 'Incorrect password';
+        } else if (error.code === 'auth/invalid-email') {
+          message = 'Invalid email address';
+        } else if (error.code === 'auth/user-disabled') {
+          message = 'This account has been disabled';
+        } else if (error.code === 'auth/too-many-requests') {
+          message = 'Too many login attempts. Please try again later';
+        } else if (error.code === 'auth/invalid-credential') {
+          message = 'Invalid email or password';
+        }
+
+        // Show error
+        errorMessage.innerHTML = `<strong>Error:</strong> ${message}`;
+        errorAlert.classList.remove('hidden');
+
+        // Clear password for security
+        document.getElementById('password').value = '';
+      }
+    });
+
+    // ============================
+    // CHECK EXISTING SESSION
+    // ============================
+
+    onAuthStateChanged(auth, (user) => {
+      if (user) {
+        // Already logged in, redirect to dashboard
+        window.location.href = '/admin.html';
+      }
+    });
+
+    // ============================
+    // PREFILL EMAIL IF REMEMBERED
+    // ============================
+
+    const savedEmail = localStorage.getItem('adminEmailSaved');
+    if (savedEmail) {
+      document.getElementById('email').value = savedEmail;
+      document.getElementById('rememberMe').checked = true;
+    }
+  </script>
+
+</body>
+</html>

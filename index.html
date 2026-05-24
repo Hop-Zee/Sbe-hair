@@ -1,0 +1,477 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>SBE HAIR SALON - Oluwo, Egbeda Ibadan</title>
+
+  <!-- Tailwind -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+
+  <!-- Paystack V2 -->
+  <script src="https://js.paystack.co/v2/inline.js"></script>
+
+  <!-- EmailJS -->
+  <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+
+  <style>
+    body {
+      font-family: "Segoe UI", sans-serif;
+    }
+
+    .hero-bg {
+      background:
+        linear-gradient(rgba(0,0,0,.82), rgba(0,0,0,.82)),
+        url("https://images.unsplash.com/photo-1621605815971-fbc98d665033?q=80&w=1600&auto=format&fit=crop")
+        center/cover no-repeat;
+    }
+
+    .gallery-scroll::-webkit-scrollbar {
+      display: none;
+    }
+
+    input,
+    select {
+      outline: none;
+    }
+
+    .btn-admin {
+      position: fixed;
+      bottom: 30px;
+      right: 30px;
+      z-index: 40;
+    }
+
+    @media (max-width: 640px) {
+      .btn-admin {
+        bottom: 20px;
+        right: 20px;
+      }
+    }
+  </style>
+</head>
+
+<body class="bg-zinc-950 text-white">
+
+  <!-- HEADER -->
+  <header class="bg-black sticky top-0 z-50 border-b border-yellow-500">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 py-4 flex justify-between items-center">
+
+      <div class="flex items-center gap-3">
+        <i class="fa-solid fa-scissors text-2xl sm:text-3xl text-yellow-500"></i>
+        <div>
+          <h1 class="text-lg sm:text-2xl font-black tracking-widest">SBE HAIR SALON</h1>
+          <p class="text-xs text-yellow-500">OLUWO, EGBEDA • IBADAN</p>
+        </div>
+      </div>
+
+      <a href="https://wa.me/2348153726279" target="_blank" 
+         class="bg-green-500 hover:bg-green-600 px-4 sm:px-6 py-2 sm:py-3 rounded-full flex items-center gap-2 transition text-sm sm:text-base">
+        <i class="fa-brands fa-whatsapp"></i>
+        <span class="hidden sm:inline">WhatsApp Us</span>
+        <span class="sm:hidden">WhatsApp</span>
+      </a>
+    </div>
+  </header>
+
+  <!-- HERO -->
+  <section class="hero-bg min-h-screen flex items-center justify-center text-center px-4 sm:px-6">
+    <div class="max-w-4xl">
+      <h2 class="text-3xl sm:text-5xl lg:text-7xl font-black leading-tight mb-4 sm:mb-6">
+        Premium Hair Services <br>
+        in Ibadan
+      </h2>
+      <p class="text-base sm:text-lg lg:text-xl text-zinc-300 mb-6 sm:mb-10">
+        Choose your style • Pick a date • Pay 20% Deposit • Get Booking Code
+      </p>
+      <button onclick="scrollToBooking()" 
+              class="bg-yellow-500 hover:bg-yellow-600 text-black font-black px-6 sm:px-10 py-3 sm:py-5 rounded-full text-lg sm:text-xl transition">
+        BOOK NOW
+      </button>
+    </div>
+  </section>
+
+  <!-- GALLERY -->
+  <section class="bg-black py-12 sm:py-16">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6">
+      <h2 class="text-3xl sm:text-4xl font-black text-center mb-8 sm:mb-10 text-yellow-500">
+        Our Latest Works
+      </h2>
+      <div class="flex gap-4 sm:gap-5 overflow-x-auto pb-4 snap-x snap-mandatory justify-start lg:justify-center lg:flex-wrap lg:overflow-visible">
+        <img src="https://images.unsplash.com/photo-1622286342621-4bd786c2447c?q=80&w=800&auto=format&fit=crop" 
+             class="w-64 sm:w-80 h-64 sm:h-80 rounded-3xl object-cover flex-shrink-0 snap-center" loading="lazy">
+        <img src="https://images.unsplash.com/photo-1517832606299-7ae9b720a186?q=80&w=800&auto=format&fit=crop" 
+             class="w-64 sm:w-80 h-64 sm:h-80 rounded-3xl object-cover flex-shrink-0 snap-center" loading="lazy">
+        <img src="https://images.unsplash.com/photo-1503951914875-452162b0f3f1?q=80&w=800&auto=format&fit=crop" 
+             class="w-64 sm:w-80 h-64 sm:h-80 rounded-3xl object-cover flex-shrink-0 snap-center" loading="lazy">
+        <img src="https://images.unsplash.com/photo-1622287162716-f311baa1a2b8?q=80&w=800&auto=format&fit=crop" 
+             class="w-64 sm:w-80 h-64 sm:h-80 rounded-3xl object-cover flex-shrink-0 snap-center" loading="lazy">
+      </div>
+    </div>
+  </section>
+
+  <!-- BOOKING -->
+  <section id="booking-section" class="max-w-5xl mx-auto px-4 sm:px-6 py-12 sm:py-16">
+    <h2 class="text-3xl sm:text-4xl font-black text-center text-yellow-500 mb-8 sm:mb-10">
+      Make Your Appointment
+    </h2>
+
+    <div class="bg-zinc-900 rounded-2xl sm:rounded-3xl p-6 sm:p-8 shadow-2xl">
+      <form id="bookingForm">
+
+        <!-- CATEGORY -->
+        <div class="mb-6">
+          <label class="block mb-2 font-medium text-sm sm:text-base">Select Category</label>
+          <select id="category" onchange="updateServices()" required 
+                  class="w-full bg-zinc-800 border border-zinc-700 rounded-lg sm:rounded-xl p-3 sm:p-4 text-sm sm:text-base">
+            <option value="">— Choose Category —</option>
+            <option value="male-cut">Male Hair Cut Services</option>
+            <option value="male-curls">Male Curls / Relax / Waves</option>
+            <option value="male-color">Male Coloring Services</option>
+            <option value="female-cut">Female Hair Cut & Curls</option>
+            <option value="female-color">Female Coloring Services</option>
+            <option value="locs-starter">Locs & Dreadlocks Starter</option>
+            <option value="dread-maintenance">Dreadlocks Maintenance</option>
+            <option value="dread-color">Dreadlocks & Natural Hair Coloring</option>
+            <option value="nail">Manicure & Pedicure</option>
+            <option value="kids">Kids Haircut</option>
+          </select>
+        </div>
+
+        <!-- SERVICE -->
+        <div class="mb-6">
+          <label class="block mb-2 font-medium text-sm sm:text-base">Select Service</label>
+          <select id="service" onchange="calculateDeposit()" required 
+                  class="w-full bg-zinc-800 border border-zinc-700 rounded-lg sm:rounded-xl p-3 sm:p-4 text-sm sm:text-base">
+            <option value="">— Select Category First —</option>
+          </select>
+        </div>
+
+        <!-- DEPOSIT -->
+        <div id="deposit-info" class="hidden bg-zinc-800 rounded-lg sm:rounded-xl p-4 sm:p-5 text-center mb-6">
+          <p class="text-yellow-500 font-bold text-sm sm:text-base">20% Deposit</p>
+          <h3 id="deposit-amount" class="text-2xl sm:text-3xl font-black mt-2"></h3>
+        </div>
+
+        <!-- LOCATION -->
+        <div class="mb-6">
+          <label class="block mb-3 font-medium text-sm sm:text-base">Service Location</label>
+          <div class="bg-zinc-800 rounded-lg sm:rounded-xl p-4 sm:p-5 flex flex-col sm:flex-row gap-4 sm:gap-5">
+            <label class="flex items-center gap-2 cursor-pointer">
+              <input type="radio" name="location" value="Shop" checked class="accent-yellow-500">
+              <span class="text-sm sm:text-base">Come To Shop</span>
+            </label>
+            <label class="flex items-center gap-2 cursor-pointer">
+              <input type="radio" name="location" value="Home Service" class="accent-yellow-500">
+              <span class="text-sm sm:text-base">Home Service</span>
+            </label>
+          </div>
+        </div>
+
+        <!-- DATE & TIME -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6 mb-6">
+          <div>
+            <label class="block mb-2 font-medium text-sm sm:text-base">Preferred Date</label>
+            <input type="date" id="date" required 
+                   class="w-full bg-zinc-800 border border-zinc-700 rounded-lg sm:rounded-xl p-3 sm:p-4 text-sm sm:text-base">
+          </div>
+          <div>
+            <label class="block mb-2 font-medium text-sm sm:text-base">Preferred Time</label>
+            <select id="time" required class="w-full bg-zinc-800 border border-zinc-700 rounded-lg sm:rounded-xl p-3 sm:p-4 text-sm sm:text-base">
+              <option value="">Select Time</option>
+              <option>09:00 AM</option>
+              <option>10:00 AM</option>
+              <option>11:00 AM</option>
+              <option>12:00 PM</option>
+              <option>01:00 PM</option>
+              <option>02:00 PM</option>
+              <option>03:00 PM</option>
+              <option>04:00 PM</option>
+              <option>05:00 PM</option>
+              <option>06:00 PM</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- CUSTOMER INFO -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6 mb-6">
+          <div>
+            <label class="block mb-2 font-medium text-sm sm:text-base">Full Name</label>
+            <input type="text" id="name" required placeholder="Your name" 
+                   class="w-full bg-zinc-800 border border-zinc-700 rounded-lg sm:rounded-xl p-3 sm:p-4 text-sm sm:text-base">
+          </div>
+          <div>
+            <label class="block mb-2 font-medium text-sm sm:text-base">Phone Number</label>
+            <input type="tel" id="phone" required placeholder="+234..." 
+                   class="w-full bg-zinc-800 border border-zinc-700 rounded-lg sm:rounded-xl p-3 sm:p-4 text-sm sm:text-base">
+          </div>
+        </div>
+
+        <div class="mb-8">
+          <label class="block mb-2 font-medium text-sm sm:text-base">Email Address</label>
+          <input type="email" id="email" required placeholder="your@email.com" 
+                 class="w-full bg-zinc-800 border border-zinc-700 rounded-lg sm:rounded-xl p-3 sm:p-4 text-sm sm:text-base">
+        </div>
+
+        <!-- SUBMIT BUTTON -->
+        <button type="submit" class="w-full bg-yellow-500 hover:bg-yellow-600 text-black font-black py-3 sm:py-4 rounded-lg sm:rounded-xl transition text-base sm:text-lg">
+          <i class="fa-solid fa-credit-card mr-2"></i>PAY 20% DEPOSIT & BOOK
+        </button>
+
+      </form>
+    </div>
+  </section>
+
+  <!-- ADMIN LOGIN BUTTON (Fixed Position) -->
+  <button onclick="goToAdminLogin()" 
+          class="btn-admin bg-yellow-500 hover:bg-yellow-600 text-black font-bold px-4 sm:px-6 py-2 sm:py-3 rounded-full shadow-lg transition flex items-center gap-2">
+    <i class="fa-solid fa-user-shield"></i>
+    <span class="hidden sm:inline">Admin Login</span>
+    <span class="sm:hidden">Admin</span>
+  </button>
+
+  <!-- FOOTER -->
+  <footer class="bg-black border-t border-yellow-500 mt-16 py-8">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 text-center text-zinc-400 text-sm">
+      <p>&copy; 2026 SBE Hair Salon. All rights reserved. | Oluwo, Egbeda • Ibadan</p>
+    </div>
+  </footer>
+
+  <script>
+    // ============================
+    // NAVIGATION
+    // ============================
+    
+    function goToAdminLogin() {
+      window.location.href = '/login.html';
+    }
+
+    // ============================
+    // SERVICES DATA
+    // ============================
+
+    const servicesData = {
+      "male-cut": [
+        "Fade Cut - ₦3,000",
+        "Low/High Fade - ₦3,500",
+        "Design/Shape-up - ₦4,000",
+        "Clean Shave - ₦2,000"
+      ],
+
+      "male-curls": [
+        "Wave Process - ₦8,000",
+        "Relax Hair - ₦6,000",
+        "Curl Training - ₦5,000"
+      ],
+
+      "male-color": [
+        "Hair Color - ₦10,000",
+        "Bleach & Color - ₦15,000",
+        "Highlight - ₦12,000"
+      ],
+
+      "female-cut": [
+        "Haircut - ₦5,000",
+        "Layers - ₦6,000",
+        "Bob Cut - ₦7,000",
+        "Relaxer - ₦8,000",
+        "Blow-dry & Curl - ₦3,000"
+      ],
+
+      "female-color": [
+        "Single Color - ₦15,000",
+        "Ombre - ₦18,000",
+        "Balayage - ₦20,000",
+        "Root Touch-up - ₦10,000"
+      ],
+
+      "locs-starter": [
+        "Soft Locs - ₦20,000",
+        "Faux Locs - ₦15,000",
+        "Braided Locs - ₦18,000",
+        "Crochet Locs - ₦12,000"
+      ],
+
+      "dread-maintenance": [
+        "Dread Tightening - ₦5,000",
+        "Dread Washing - ₦3,000",
+        "Dread Retwist - ₦8,000"
+      ],
+
+      "dread-color": [
+        "Basic Color on Dread - ₦15,000",
+        "Partial Color on Dread - ₦20,000",
+        "Full Color on Locs - ₦25,000",
+        "Other Color on Natural Hair (Full Length) - ₦35,000"
+      ],
+
+      "nail": [
+        "Manicure - ₦5,000",
+        "Manicure and Pedicure - ₦10,000",
+        "Pedicure - ₦5,000",
+        "Twosome - ₦10,000",
+        "Twosome Plus - ₦13,000",
+        "Threesome - ₦15,000",
+        "Threesome Premium - ₦18,000"
+      ],
+
+      "kids": [
+        "Kids Haircut (Babies below 12 months) - ₦5,000",
+        "Kids Haircut Dye/No Dye - ₦4,000"
+      ]
+    };
+
+    // ============================
+    // SCROLL TO BOOKING
+    // ============================
+
+    function scrollToBooking() {
+      document.getElementById("booking-section").scrollIntoView({ behavior: "smooth" });
+    }
+
+    // ============================
+    // UPDATE SERVICES
+    // ============================
+
+    function updateServices() {
+      const category = document.getElementById("category").value;
+      const serviceSelect = document.getElementById("service");
+
+      serviceSelect.innerHTML = '<option value="">— Select Service —</option>';
+      document.getElementById("deposit-info").classList.add("hidden");
+
+      if (servicesData[category]) {
+        servicesData[category].forEach(service => {
+          const option = document.createElement("option");
+          option.value = service;
+          option.textContent = service;
+          serviceSelect.appendChild(option);
+        });
+      }
+    }
+
+    // ============================
+    // CALCULATE DEPOSIT
+    // ============================
+
+    function calculateDeposit() {
+      const service = document.getElementById("service").value;
+      if (!service) return;
+
+      const match = service.match(/₦([\d,]+)/);
+      if (match) {
+        const price = parseInt(match[1].replace(/,/g, ""));
+        const deposit = Math.round(price * 0.20);
+
+        document.getElementById("deposit-amount").textContent = "₦" + deposit.toLocaleString();
+        document.getElementById("deposit-info").classList.remove("hidden");
+      }
+    }
+
+    // ============================
+    // SANITIZE INPUT
+    // ============================
+
+    function sanitizeInput(str) {
+      const div = document.createElement("div");
+      div.textContent = str;
+      return div.innerHTML;
+    }
+
+    // ============================
+    // FIREBASE BOOKING
+    // ============================
+
+    async function saveBookingToFirebase(bookingData) {
+      try {
+        // Firebase setup would go here
+        // For now, just log it
+        console.log("Booking data:", bookingData);
+        return true;
+      } catch (error) {
+        console.error("Error:", error);
+        return false;
+      }
+    }
+
+    // ============================
+    // FORM SUBMIT
+    // ============================
+
+    document.getElementById("bookingForm").addEventListener("submit", async function(e) {
+      e.preventDefault();
+
+      const service = document.getElementById("service").value;
+      const date = document.getElementById("date").value;
+      const time = document.getElementById("time").value;
+      const name = sanitizeInput(document.getElementById("name").value);
+      const phone = sanitizeInput(document.getElementById("phone").value);
+      const email = sanitizeInput(document.getElementById("email").value);
+      const location = document.querySelector('input[name="location"]:checked').value;
+
+      if (!service || !date || !time || !name || !phone || !email) {
+        alert("Please fill all fields");
+        return;
+      }
+
+      const match = service.match(/₦([\d,]+)/);
+      const price = match ? parseInt(match[1].replace(/,/g, "")) : 0;
+      const deposit = Math.round(price * 0.20);
+      const bookingCode = "SBE-" + Math.floor(10000 + Math.random() * 90000);
+
+      // Initialize Paystack
+      const paystack = new PaystackPop();
+
+      paystack.newTransaction({
+        key: "pk_live_your_paystack_key", // REPLACE WITH ENV VAR
+        email: email,
+        amount: deposit * 100,
+        currency: "NGN",
+        firstName: name,
+        phone: phone,
+        reference: "SBE-" + crypto.randomUUID().split('-')[0].toUpperCase(),
+
+        onSuccess: async (transaction) => {
+          alert(`✅ PAYMENT SUCCESSFUL\n\nBooking Code: ${bookingCode}\n\nService: ${service}\n\nDate: ${date}\n\nTime: ${time}`);
+
+          const bookingData = {
+            name: name,
+            phone: phone,
+            email: email,
+            service: service,
+            category: document.getElementById("category").value,
+            location: location,
+            date: date,
+            time: time,
+            bookingCode: bookingCode,
+            depositPaid: "₦" + deposit.toLocaleString(),
+            fullPrice: "₦" + price.toLocaleString(),
+            paymentReference: transaction.reference,
+            paymentStatus: "success",
+            createdAt: new Date().toISOString()
+          };
+
+          // Save to Firebase
+          await saveBookingToFirebase(bookingData);
+
+          // WhatsApp notification
+          const msg = encodeURIComponent(`NEW BOOKING\n\nName: ${name}\n\nPhone: ${phone}\n\nemail: ${email}\n\nService: ${service}\n\nLocation: ${location}\n\nDate: ${date}\n\nTime: ${time}\n\nBooking Code: ${bookingCode}`);
+          window.open(`https://wa.me/2348153726279?text=${msg}`, "_blank");
+
+          // Reset form
+          document.getElementById("bookingForm").reset();
+          document.getElementById("deposit-info").classList.add("hidden");
+        },
+
+        onCancel: () => {
+          alert("Transaction cancelled");
+        }
+      });
+    });
+  </script>
+
+</body>
+</html>
