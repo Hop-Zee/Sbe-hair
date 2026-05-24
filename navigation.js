@@ -12,8 +12,8 @@ export class NavigationManager {
     const pages = {
       index: '/',
       booking: '/',
-      login: '/login.html',
-      admin: '/admin.html'
+      login: 'login.html',
+      admin: 'admin.html'
     };
 
     if (pages[page]) {
